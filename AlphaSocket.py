@@ -2,54 +2,19 @@ import socket
 import time
 import cv2
 import numpy
-import sys
 
-class VideoServer:
-    def __init__(self, cap, Port=9990) -> None:
-        self.cap = cap
-        self.Addr = ('', Port)
-        self.Server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.Server.bind(self.Addr)
-        # TODO:state recorcd ?
-        # ...
-        print('---- server init success ---')
+class AlphaPortList:
+    MainControlPort = 9990
+    VideoPort = 9991
 
-    def start(self):
-        print('listening...')
-        self.Server.listen(1)
-        sock, addr = self.Server.accept()
-        print('Connect from:', str(addr))
-        self.SendVedio(sock)
-        pass
-    def close(self):
-        pass
-    
-    def SendVedio(self, sock, quality=50):
-        ret, frame = self.cap.read()
-        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
-        while ret:
-            time.sleep(0.01)
-            result, img_encode = cv2.imencode('.jpg', frame, encode_param)
-            data_np = numpy.array(img_encode)
-            data = data_np.tobytes()
-            length = str.encode(str(len(data)).ljust(16))
-            sock.send(length)
-            print('length')
-            sock.send(data)
-            print('data')
-            receive = sock.recv(1024)
-            if len(receive):
-                if str(receive, encoding='utf-8') == 'end':
-                    break
-            ret, frame = self.cap.read()
-        # TODO:state change ?
+class VideoSocket_TCP:
 
-class VideoSocket:
-    def __init__(self, cap, port=9999) -> None:
+    def __init__(self, cap, Server,port) -> None:
         self.camera = cap
-        self.ServerAddr = ('192.168.3.182', 9999)
+        self.ServerAddr = (Server, port)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    
+        # FSM: ready -> start -> close -> ready
+        self.state = 0
     def start(self):
         # try to connect server
         try:
@@ -57,40 +22,40 @@ class VideoSocket:
         except socket.error as msg:
             print(msg)
             return 1
-        self.VideoStream()
+        self.VideoStream_TCP()
 
         # close
         self.close()
     
     def close(self):
+        print('\n--- Close VideoSokect ---\n')
+        self.socket.close()
         pass
     
-    def VideoStream(self, quality=95):
+    def VideoStream_TCP(self, Gray=1 ,quality=50):
         ret, frame = self.camera.read()
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
-        while ret:
-            time.sleep(0.01)
-            # t1 = time.time()
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            result, EncodeImg = cv2.imencode('.jpg', frame, encode_param)
-            NPData = numpy.array(EncodeImg)
-            Data = NPData.tobytes()
-            Length = len(Data)
-            self.socket.send(str.encode(str(Length).ljust(16)))
-            self.socket.send(Data)
-            # t2 = time.time()
-            # print('cost:', t2-t1)
-            # receive = self.socket.recv(1024)
-            # if len(receive):
-            #     if str(receive, encoding='utf-8')=='E':
-            #         return
-            ret, frame = self.camera.read()
+        try:
+            while ret:
+                time.sleep(0.01)
+                # t1 = time.time()
+                if Gray:
+                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                result, EncodeImg = cv2.imencode('.jpg', frame, encode_param)
+                NPData = numpy.array(EncodeImg)
+                Data = NPData.tobytes()
+                Length = len(Data)
+                self.socket.send(str.encode(str(Length).ljust(16)))
+                self.socket.send(Data)
+                ret, frame = self.camera.read()
+        except KeyboardInterrupt:
+            return 
 
-class ControlSocket:
+class MoveSocket:
     
     pass
 
-class AlphaSocketManger:
+class AlphaSocket:
     pass
 
 if __name__=="__main__":
@@ -99,7 +64,7 @@ if __name__=="__main__":
     # vs.start()
 
     cap = cv2.VideoCapture(0)
-    vs = VideoSocket(cap)
+    vs = VideoSocket_TCP(cap, "192.168.3.182", 9991)
     vs.start()
     
     # while True:
@@ -108,6 +73,7 @@ if __name__=="__main__":
     #     cap.read()
     #     t2 = time.time()
     #     print('t:', t2-t1)
+    
     pass
 
 
