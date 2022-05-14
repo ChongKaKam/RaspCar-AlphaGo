@@ -56,6 +56,20 @@ class MoveSocket:
     pass
 
 class AlphaSocket:
+
+    PortList = {
+        'Control':9990,
+        'VedioPort': 9991,
+    }
+    def __init__(self) -> None:
+        # create a main control TCP server
+        
+        # create a VedioSocket
+
+        pass
+    def start(self):
+        
+        pass
     pass
 
 if __name__=="__main__":

@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 import time
-from Servo import Servo_Manager
+from AlphaGo.Module.Servo import Servo_Manager
 
 class Joystick:
     def __init__(self) -> None:
