@@ -8,7 +8,7 @@ class MotorState:
     TurnLeft = 3
     TurnRight = 4
 
-class Motor(object):
+class MotorModule(object):
     
     def __init__(self, Ain1=12, Ain2=13, Aen=6, Bin1=20, Bin2=21, Ben=26) -> None:
         # default pin configuration
@@ -91,7 +91,7 @@ class Motor(object):
             self.PWMB.ChangeDutyCycle(speed)
             
 if __name__=="__main__":
-    AlphaGo = Motor()
+    AlphaGo = MotorModule()
     AlphaGo.TurnRight()
     try:
         while True:
