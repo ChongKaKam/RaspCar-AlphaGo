@@ -1,5 +1,6 @@
 import cv2
-from AlphaGo.Module.Servo import Servo_Manager
+# from Servo import Servo_Manager
+from Module.Servo import Servo_Manager
 
 
 class CameraModule:

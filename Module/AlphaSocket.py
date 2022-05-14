@@ -51,17 +51,13 @@ class VideoSocket_TCP:
         except KeyboardInterrupt:
             return 
 
-class MoveSocket:
-    
-    pass
-
 class AlphaSocket:
 
     PortList = {
         'Control':9990,
         'VedioPort': 9991,
     }
-    def __init__(self) -> None:
+    def __init__(self, camera) -> None:
         # create a main control TCP server
         
         # create a VedioSocket
