@@ -69,9 +69,11 @@ class Servo_Manager:
     __LED1_OFF_L    = 0x0C
     __LED1_OFF_H    = 0x0D
 
-    def __init__(self, address=0x40) -> None:
+    def __init__(self, address=0x40, PWMFreq=50) -> None:
         self.bus = smbus.SMBus(1)
         self.address = address
+        self.PWMFreq = PWMFreq
+        self.theta = [0,0]
         self.ServoX = Servo(self.bus, 
                             address, 
                             self.__LED0_ON_L, 
@@ -104,12 +106,30 @@ class Servo_Manager:
         time.sleep(0.005)
         self.bus.write_byte_data(self.address, self.__MODE1, OLD_MODE | 0x80)
 
+    def DeviceInit(self, thetaX=90, thetaY=30):
+        self.SetPWMFreq(self.PWMFreq)
+        time.sleep(0.001)
+        self.SetTheta(thetaX, thetaY)
+
+    def SetTheta(self, thetaX, thetaY):
+        if thetaX<30 or thetaX>150: return
+        if thetaY<0  or thetaY>60 : return
+        self.ServoY.SetAngle(thetaY)
+        self.ServoX.SetAngle(thetaX)
+        self.theta = [thetaX, thetaY]
+    
+    def GetTheta(self):
+        return self.theta
+
+
 if __name__=="__main__":
-    Manager = Servo_Manager(0x40)
-    Manager.SetPWMFreq(50)
+    Manager = Servo_Manager()
+    # Manager.SetPWMFreq(50)
     # Manager.ServoX.SetPulse(1600)
-    Manager.ServoX.SetAngle(60)
-    Manager.ServoY.SetAngle(0)
-    Manager.ServoX.Show()
-    Manager.ServoY.Show()
+    # Manager.ServoX.SetAngle(60)
+    # Manager.ServoY.SetAngle(0)
+    Manager.DeviceInit()
+
+    theta = Manager.GetTheta()
+    print('[theta_X, theta_Y]:', theta)
     
