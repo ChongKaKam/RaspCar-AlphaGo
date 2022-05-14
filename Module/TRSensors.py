@@ -4,7 +4,7 @@ import RPi.GPIO as GPIO
 import time
 
 
-class TRSensor(object):
+class TRSensorModule(object):
 	def __init__(self,numSensors = 5):
 		self.CS = 5
 		self.Clock = 25
@@ -184,7 +184,7 @@ class TRSensor(object):
 
 # Simple example prints accel/mag data once per second:
 if __name__ == '__main__':
-	TR = TRSensor()
+	TR = TRSensorModule()
 	print("TRSensor Example")
 	while True:
 		print(TR.AnalogRead())
