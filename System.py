@@ -5,6 +5,9 @@ from Module.JoyStick import JoystickModule
 from Module.Motor import MotorModule
 from Module.RGB import LEDModule
 from Module.TRSensors import TRSensorModule
+import threading
+
+lock = threading.Lock()
 
 class AlphaSystem:
     def __init__(self) -> None:
@@ -26,7 +29,12 @@ class AlphaSystem:
         self.Camera = CameraModule()
         print('>> Camera is ready.')
         print('>> AlphaSocket init...')
-        self.Socket = AlphaSocket(self.Camera.device)
+        self.Socket = AlphaSocket(self.Camera.device,lock)
         print('>> AlphaSocket is  ready.')
+
+    def Run(self):
         
+        pass
+
+
     pass
