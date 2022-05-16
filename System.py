@@ -5,9 +5,16 @@ from Module.JoyStick import JoystickModule
 from Module.Motor import MotorModule
 from Module.RGB import LEDModule
 from Module.TRSensors import TRSensorModule
-import threading
 
+import threading
+import time
+
+# thread lock 
 lock = threading.Lock()
+
+# CmdDic = {
+#     'forward': 1
+# }
 
 class AlphaSystem:
     def __init__(self) -> None:
@@ -33,8 +40,36 @@ class AlphaSystem:
         print('>> AlphaSocket is  ready.')
 
     def Run(self):
-        
-        pass
-
-
-    pass
+        self.Socket.Control.start()
+        while True:
+            time.sleep(0.005)
+            cmd = self.Socket.Control.getData()
+            if cmd == None: continue
+            print('cmd:', cmd)
+            if cmd == 'w':
+                self.Camera.up(5)
+            elif cmd == 's':
+                self.Camera.down(5)
+            elif cmd == 'a':
+                self.Camera.left(5)
+            elif cmd == 'd':
+                self.Camera.right(5)
+            if cmd[:5] == 'VSON:':
+                ip = cmd[5:]
+                self.Socket.OpenVideo(ip)
+                if self.Socket.Video.state==False:
+                    time.sleep(1)
+                    self.Socket.Video.start()
+            if cmd == 'VSOFF':
+                self.Socket.CloseVideo()
+            if cmd=='quit':
+                print('close TCP')
+                self.Socket.CloseVideo()
+                self.Socket.CloseControl()
+                if self.Socket.Video.is_alive():    
+                    self.Socket.Video.join()
+                self.Socket.Control.join()
+                
+if __name__=="__main__":
+    sys = AlphaSystem()
+    sys.Run()
