@@ -36,7 +36,7 @@ class AlphaSystem:
         self.JoyStick = JoystickModule()
         print('>> JoyStick is ready.')
         print('>> Device TRSensor init...')
-        self.TR = TRSensorModule()
+        self.TR = TRSensorModule(5, self.Motor.Stop)
         self.tr_thread = threading.Thread(target=self.TR.detect_front)
         print('>> TRSensor is ready.')
         print('>> Device Camera init...')
@@ -76,13 +76,9 @@ class AlphaSystem:
             elif cmd == 'a':
                 # self.Camera.left(delta)
                 self.Motor.TurnLeft()
-                time.sleep(0.08)
-                self.Motor.Stop()
             elif cmd == 'd':
                 # self.Camera.right(delta)
                 self.Motor.TurnRight()
-                time.sleep(0.08)
-                self.Motor.Stop()
             elif cmd == 'stop':
                 self.Motor.Stop()
             elif cmd == 'i':
@@ -98,10 +94,8 @@ class AlphaSystem:
             elif cmd=='t':
                 self.LED.close()
             elif cmd == 'v':
-                self.Socket.OpenVideo(str(self.Socket.Control.ip[0]))
-                if self.Socket.Video.state==False:
-                    time.sleep(1)
-                    self.Socket.Video.start()
+                if self.Socket.ifOpenVideo==False:
+                    self.Socket.OpenVideo(str(self.Socket.Control.ip[0]))
             elif cmd == 'b':
                 self.Socket.CloseVideo()
             elif cmd=='q':

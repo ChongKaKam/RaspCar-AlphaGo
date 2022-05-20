@@ -5,7 +5,7 @@ import time
 
 
 class TRSensorModule(object):
-	def __init__(self,numSensors = 5):
+	def __init__(self,numSensors = 5, callback = 0):
 		self.CS = 5
 		self.Clock = 25
 		self.Address = 24
@@ -28,7 +28,7 @@ class TRSensorModule(object):
 		self.ifobject = False
 		GPIO.setup(self.DR, GPIO.IN, GPIO.PUD_UP)
 		GPIO.setup(self.DL, GPIO.IN, GPIO.PUD_UP)
-
+		self.callback = callback
 	"""
 	Reads the sensor values into an array. There *MUST* be space
 	for as many values as there were sensors specified in the constructor.
@@ -191,6 +191,8 @@ class TRSensorModule(object):
 			DL_status = GPIO.input(self.DL)
 			if (DL_status == 0) or (DR_status == 0):
 				self.ifobject = True
+				if self.callback !=  0:
+					self.callback()
 			else:
 				self.ifobject = False
 			time.sleep(0.5)

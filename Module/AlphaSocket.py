@@ -13,7 +13,6 @@ class VideoStream(threading.Thread):
         self.Port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.state = False
-        self.exit = False
 
     def run(self):
         self.state = True
@@ -26,6 +25,7 @@ class VideoStream(threading.Thread):
         self.quality = quality
 
     def _VideoSend(self):
+        time.sleep(1)
         try:
             self.socket.connect(self.ServerAddr)
         except socket.error as msg:
@@ -132,14 +132,20 @@ class AlphaSocket:
     def __init__(self, camera, lock) -> None:
         # create a main control TCP server
         self.Control = TCPControl(self.ServerAddr,lock)
+        self.camera = camera
+        self.ifOpenVideo = False
         # create a VedioSocket
-        self.Video = VideoStream(camera, self.PortList['Video'])
+        # self.Video = VideoStream(camera, self.PortList['Video'])
         
     def OpenVideo(self, IP, Gray=1, quality=50):
+        self.ifOpenVideo = True
+        self.Video = VideoStream(self.camera, self.PortList['Video'])
         self.Video.OpenVideo(IP, Gray, quality)
         # you need to call start() to start this Thread
+        self.Video.start()
 
     def CloseVideo(self):
+        self.ifOpenVideo = False
         self.Video.close()
     
     def CloseControl(self):
