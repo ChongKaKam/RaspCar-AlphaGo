@@ -103,9 +103,14 @@ class AlphaSystem:
                 break
         self.Socket.CloseVideo()
         self.Socket.CloseControl()
-        if self.Socket.Video.is_alive():    
-            self.Socket.Video.join()
+        self.TR.close_decte()
+        if self.Socket.Video != None:
+            if self.Socket.Video.is_alive():    
+                self.Socket.Video.join()
+        if self.tr_thread.is_alive():
+            self.tr_thread.join()
         self.Socket.Control.join()
+        
 
     def setLED(self):
         while self.led_state:
