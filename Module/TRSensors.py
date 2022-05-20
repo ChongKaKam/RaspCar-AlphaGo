@@ -25,6 +25,7 @@ class TRSensorModule(object):
 		# DR and DL
 		self.DR = 16
 		self.DL = 19
+		self.enable_dectect = False
 		self.ifobject = False
 		GPIO.setup(self.DR, GPIO.IN, GPIO.PUD_UP)
 		GPIO.setup(self.DL, GPIO.IN, GPIO.PUD_UP)
@@ -186,7 +187,8 @@ class TRSensorModule(object):
 		
 		return self.last_value,sensor_values
 	def detect_front(self):
-		while True:
+		self.enable_dectect = True
+		while self.enable_dectect:
 			DR_status = GPIO.input(self.DR)
 			DL_status = GPIO.input(self.DL)
 			if (DL_status == 0) or (DR_status == 0):
@@ -195,8 +197,11 @@ class TRSensorModule(object):
 					self.callback()
 			else:
 				self.ifobject = False
-			time.sleep(0.5)
-		pass
+			time.sleep(0.1)
+			
+	def close_decte(self):
+		print('close TR detect')
+		self.enable_dectect = False
 
 
 # Simple example prints accel/mag data once per second:

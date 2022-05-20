@@ -134,6 +134,7 @@ class AlphaSocket:
         self.Control = TCPControl(self.ServerAddr,lock)
         self.camera = camera
         self.ifOpenVideo = False
+        self.Video = None
         # create a VedioSocket
         # self.Video = VideoStream(camera, self.PortList['Video'])
         
@@ -145,8 +146,12 @@ class AlphaSocket:
         self.Video.start()
 
     def CloseVideo(self):
+        if self.Video == None: return
         self.ifOpenVideo = False
         self.Video.close()
+        self.Video = None
+        
+        
     
     def CloseControl(self):
         self.Control.close()
