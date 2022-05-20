@@ -67,6 +67,7 @@ class AlphaGoClient:
             if char == 'v':
                 CreateVideoStream()
             if char == 'b':
+                global ifOpenVideo
                 ifOpenVideo = False
         except AttributeError:
             pass
