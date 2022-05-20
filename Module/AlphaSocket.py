@@ -7,9 +7,9 @@ import numpy
 
 
 class VideoStream(threading.Thread):
-    def __init__(self, cap, port) -> None:
+    def __init__(self, camera, port) -> None:
         super(VideoStream, self).__init__()
-        self.camera = cap
+        self.camera = camera
         self.Port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.state = False
@@ -32,18 +32,21 @@ class VideoStream(threading.Thread):
             print(msg)
             return 1
         print('Video: connect server!')
-        ret, frame = self.camera.read()
+        ret, frame = self.camera.device.read()
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), self.quality]
+        font = cv2.FONT_HERSHEY_COMPLEX
         while (ret and self.state):
             if self.Gray:
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            cv2.putText(frame, 'ThX: '+str(int(-90+self.camera.Servos.theta[0])), (10,50), font, 0.5, (128,128,128), 2, cv2.LINE_AA)
+            cv2.putText(frame, 'ThY: '+str(int(30-self.camera.Servos.theta[1])), (10,70), font, 0.5, (128,128,128), 2, cv2.LINE_AA)
             result, EncodeImg = cv2.imencode('.jpg', frame, encode_param)
             NPData = numpy.array(EncodeImg)
             Data = NPData.tobytes()
             Length = len(Data)
             self.socket.send(str.encode(str(Length).ljust(16)))
             self.socket.send(Data)
-            ret, frame = self.camera.read()
+            ret, frame = self.camera.device.read()
         self.socket.close()
         return 0    
 

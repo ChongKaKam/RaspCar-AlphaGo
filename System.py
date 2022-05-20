@@ -43,7 +43,7 @@ class AlphaSystem:
         self.Camera = CameraModule()
         print('>> Camera is ready.')
         print('>> AlphaSocket init...')
-        self.Socket = AlphaSocket(self.Camera.device,lock)
+        self.Socket = AlphaSocket(self.Camera,lock)
         print('>> AlphaSocket is  ready.')
 
     def Run(self):
