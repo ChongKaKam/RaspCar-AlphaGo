@@ -37,7 +37,16 @@ class MotorModule(object):
         # init state
         self.state = MotorState.Stop
         self.Stop()
-    
+    def avoid_object(self):
+        if self.state == MotorState.Forward:
+            self.state = MotorState.Stop
+            self.PWMA.ChangeDutyCycle(0)
+            self.PWMB.ChangeDutyCycle(0)
+            GPIO.output(self.AIN1,GPIO.LOW)
+            GPIO.output(self.AIN2,GPIO.LOW)
+            GPIO.output(self.BIN1,GPIO.LOW)
+            GPIO.output(self.BIN2,GPIO.LOW)        
+
     def Stop(self):
         self.state = MotorState.Stop
         self.PWMA.ChangeDutyCycle(0)

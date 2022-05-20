@@ -36,7 +36,7 @@ class AlphaSystem:
         self.JoyStick = JoystickModule()
         print('>> JoyStick is ready.')
         print('>> Device TRSensor init...')
-        self.TR = TRSensorModule(5, self.Motor.Stop)
+        self.TR = TRSensorModule(5, self.Motor.avoid_object)
         self.tr_thread = threading.Thread(target=self.TR.detect_front)
         print('>> TRSensor is ready.')
         print('>> Device Camera init...')
