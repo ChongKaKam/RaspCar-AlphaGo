@@ -122,10 +122,10 @@ class Servo_Manager:
         return self.theta
 
     def up(self, delta):
-        self.SetTheta(self.theta[0], self.theta[1]+delta)
+        self.SetTheta(self.theta[0], self.theta[1]-delta)
 
     def down(self, delta):
-        self.SetTheta(self.theta[0], self.theta[1]-delta)
+        self.SetTheta(self.theta[0], self.theta[1]+delta)
 
     def left(self, delta):
         self.SetTheta(self.theta[0]+delta, self.theta[1])

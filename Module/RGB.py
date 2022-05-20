@@ -37,6 +37,12 @@ class LEDModule:
     def show(self):
         self.strip.show()
 
+    def setAll(self, color, wait_ms=20):
+        for i in range(self.strip.numPixels()):
+            self.strip.setPixelColor(i, color)
+            self.strip.show()
+            time.sleep(wait_ms/1000.0)
+
     def __del__(self):
         # clear DMA data
         self.close()

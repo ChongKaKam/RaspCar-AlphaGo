@@ -22,7 +22,13 @@ class TRSensorModule(object):
 		GPIO.setup(self.CS,GPIO.OUT)
 		GPIO.setup(self.DataOut,GPIO.IN,GPIO.PUD_UP)
 		GPIO.setup(self.Button,GPIO.IN,GPIO.PUD_UP)
-		
+		# DR and DL
+		self.DR = 16
+		self.DL = 19
+		self.ifobject = False
+		GPIO.setup(self.DR, GPIO.IN, GPIO.PUD_UP)
+		GPIO.setup(self.DL, GPIO.IN, GPIO.PUD_UP)
+
 	"""
 	Reads the sensor values into an array. There *MUST* be space
 	for as many values as there were sensors specified in the constructor.
@@ -179,7 +185,16 @@ class TRSensorModule(object):
 			self.last_value = avg/sum
 		
 		return self.last_value,sensor_values
-	
+	def detect_front(self):
+		while True:
+			DR_status = GPIO.input(self.DR)
+			DL_status = GPIO.input(self.DL)
+			if (DL_status == 0) or (DR_status == 0):
+				self.ifobject = True
+			else:
+				self.ifobject = False
+			time.sleep(0.5)
+		pass
 
 
 # Simple example prints accel/mag data once per second:

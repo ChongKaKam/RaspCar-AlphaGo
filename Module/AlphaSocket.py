@@ -13,6 +13,7 @@ class VideoStream(threading.Thread):
         self.Port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.state = False
+        self.exit = False
 
     def run(self):
         self.state = True
@@ -45,6 +46,7 @@ class VideoStream(threading.Thread):
             ret, frame = self.camera.read()
         self.socket.close()
         return 0    
+
     def close(self):
         print('close video stream'.center(20,'-'))
         self.state = False
@@ -57,6 +59,7 @@ class TCPControl(threading.Thread):
         super(TCPControl, self).__init__()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.state = False
+        self.connection = False
         self.Addr = Addr
         self.TreadLock = lock
         self.Buf = []
@@ -71,15 +74,16 @@ class TCPControl(threading.Thread):
         self.socket.bind(self.Addr)
         print('-- start TCP control --')
         self.socket.listen(1)
-        self.conn, addr = self.socket.accept()
-        print('conneted from: '+str(addr))
+        self.conn, self.ip = self.socket.accept()
+        print('conneted from: '+str(self.ip))
+        self.connection = True
         # send cmd to system
         # system read Buf[0] to run cmd
         while self.state:
             recv = self.conn.recv(self.RECVSIZE)
             recv = str(recv, encoding='utf-8').replace(' ','')
             # print('recv:',recv+'<')
-            if recv=='quit':
+            if recv=='q':
                 self.state = False
                 break
             # if recv=='VSON':
@@ -115,7 +119,7 @@ class TCPControl(threading.Thread):
             else:
                 self.TreadLock.release()
                 return None
-        return 'quit'
+        return 'already quit'
 
 class AlphaSocket:
 
